@@ -38,10 +38,12 @@ pip install -r requirements.txt
     * Generate random samples in that parameter space.
     * How to define direction, whether change is closer to desired tone or not?
 * Combine notes into chords and chords into songs, like [this YouTube video](https://youtu.be/InGrKBRRCUc?si=WH9fd7h9b3mImx1y).
+* Function to get frequency given note (MIDI note number?).
 * Capture inharmonicity:
     * Railsback curve / octave stretching.
     * Harmonics are not integer multiple of fundamental.
 * Package up for use in other projects.
+* Link with [guitar effects project](https://github.com/MikeCullimore/guitar-effects) to add e.g. distortion.
 * FFT
 * Wavelets?
 * Linter, formatter.

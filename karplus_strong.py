@@ -12,8 +12,15 @@ Write up as IPython notebook?
 """
 
 
+import os.path
+
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.io import wavfile
+
+
+DATA_FOLDER = "data"
+SAMPLING_FREQUENCY = 44100
 
 
 def plus_minus_ones(num_samples):
@@ -26,10 +33,15 @@ def white_noise(num_samples):
     return np.random.uniform(-1, 1, num_samples).astype(np.float32)
 
 
-def karplus_strong(frequency, num_samples, stretch_factor=1., sampling_frequency=44100, amplitude=1.):
+def karplus_strong(frequency, smoothing_factor, amplitude=1.):
+    if (smoothing_factor < 0) or (smoothing_factor > 1):
+        raise ValueError(f'smoothing_factor must be in the range [0, 1].')
+    
+    num_samples = 2*SAMPLING_FREQUENCY
+    
     # Initialise wavetable.
-    # wavetable_size = np.floor(sampling_frequency/frequency).astype(int)
-    wavetable_size = np.around(sampling_frequency/frequency).astype(int)
+    # wavetable_size = np.floor(SAMPLING_FREQUENCY/frequency).astype(int)
+    wavetable_size = np.around(SAMPLING_FREQUENCY/frequency).astype(int)
     # wavetable = plus_minus_ones(wavetable_size)
     wavetable = white_noise(wavetable_size)
 
@@ -37,7 +49,7 @@ def karplus_strong(frequency, num_samples, stretch_factor=1., sampling_frequency
     # The effect will be more pronounced at high frequencies.
     # Higher sampling frequencies should mitigate the issue?
     # todo: plot error_percent vs frequency.
-    # actual_frequency = sampling_frequency/wavetable_size
+    # actual_frequency = SAMPLING_FREQUENCY/wavetable_size
     # error = actual_frequency - frequency
     # error_percent = 100*error/frequency
     # print(f'Desired frequency: {frequency}')
@@ -45,13 +57,16 @@ def karplus_strong(frequency, num_samples, stretch_factor=1., sampling_frequency
     # print(f'Error: {error}')
     # print(f'Error [%]: {error_percent}')
 
+    # Generate signal.
     signal = np.zeros(num_samples, dtype=np.float32)
     current_sample = 0
-    k = 1 - 1/stretch_factor
-    for i in range(1, num_samples):
-        if np.random.binomial(1, k) == 0:
-            wavetable[current_sample] = 0.5*(wavetable[current_sample] + signal[i-1])
+    previous_value = 0
+    a = smoothing_factor
+    b = 1 - smoothing_factor
+    for i in range(num_samples):
+        wavetable[current_sample] = a*wavetable[current_sample] + b*previous_value
         signal[i] = wavetable[current_sample]
+        previous_value = signal[i]
         current_sample = (current_sample + 1) % wavetable_size
     
     # Remove DC offset.
@@ -75,17 +90,25 @@ def plot_signal(signal):
     plt.show()
 
 
+def save_wav(signal, filename):
+    filepath = os.path.join(DATA_FOLDER, filename)
+    wavfile.write(filepath, SAMPLING_FREQUENCY, signal)
+
+
 def main():
+    # TODO: type for this.
     kwargs = {
         # frequency = 27.5  # Lowest note on a piano.
         # frequency = 220
         "frequency": 440,
         # frequency = 4186  # Highest note on a piano. Discrepancy is higher: why?
-        "num_samples": 20000,
+        "smoothing_factor": 0.5,
         "amplitude": 0.5
     }
     signal = karplus_strong(**kwargs)
-    plot_signal(signal)
+    # plot_signal(signal)
+    filename = "Karplus-Strong example.wav"
+    save_wav(signal, filename)
 
 
 if __name__ == '__main__':
