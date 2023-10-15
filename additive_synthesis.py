@@ -48,7 +48,7 @@ def harmonics_array(fundamental: float, num_harmonics: int):
 def piano_c4_from_fft_plot():
     # The following parameters are measured from a real piano.
     # Resulting sound is still not particularly good, shows the limits of additive synthesis.
-    # https://www.jobilize.com/course/section/general-improvements-by-openstax
+    # Data from https://www.jobilize.com/course/section/general-improvements-by-openstax
     parameters_list = [
         ToneParameters(0.15, 93, 0, DEFAULT_LENGTH),
         ToneParameters(0.07, 175, 0, DEFAULT_LENGTH),
@@ -64,7 +64,28 @@ def piano_c4_from_fft_plot():
     return additive_synthesis(parameters_list)
 
 
+def random_phase():
+    # Does randomising the phases of the components improve the sound quality?
+    return np.random.uniform(0, 2*np.pi)
+
+
+def piano_a3_from_fft_plot():
+    # http://www-personal.umich.edu/~rbpaul/
+    parameters_list = [
+        ToneParameters(1.00, 217, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.72, 441, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.38, 658, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.43, 882, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.05, 1102, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.29, 1326, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.10, 1550, random_phase(), DEFAULT_LENGTH),
+        ToneParameters(0.02, 1780, random_phase(), DEFAULT_LENGTH)
+    ]
+    return additive_synthesis(parameters_list)
+
+
 def additive_synthesis(parameters_list: List[ToneParameters]):
+    # TODO: is this clipping? Need to normalise all signals to [-1, 1]?
     # TODO: handle inconsistent lengths (pad?).
     signal = np.zeros((DEFAULT_LENGTH,))
     for parameters in parameters_list:
@@ -83,11 +104,12 @@ def main():
     # TODO: decouple harmonics from envelope, i.e. generate all with amplitude 1 then shape in frequency domain?
     # TODO: frequency-dependent decay rates.
     # parameters_list = harmonics_array(440, 20)
-    envelope = exponential_decay(ExponentialDecayParameters(0.5, DEFAULT_LENGTH))
+    envelope = exponential_decay(ExponentialDecayParameters(0.2, DEFAULT_LENGTH))
     # signal = envelope*additive_synthesis(parameters_list)
     # filename = "exponential decay.wav"
-    signal = envelope*piano_c4_from_fft_plot()
-    filename = "piano C4 from FFT plot.wav"
+    # signal = envelope*piano_c4_from_fft_plot()
+    signal = envelope*piano_a3_from_fft_plot()
+    filename = "piano A3 from FFT plot (random phases).wav"
 
     waveshow(signal)
 
