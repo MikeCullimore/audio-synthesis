@@ -10,6 +10,15 @@ DATA_FOLDER = "data"
 SAMPLING_FREQUENCY = 44100
 
 
+def get_filepath(filename):
+    return os.path.join(DATA_FOLDER, filename)
+
+
+def load(filename):
+    filepath = get_filepath(filename)
+    return librosa.load(filepath)
+
+
 def specshow(C):
     fig, ax = plt.subplots()
     img = librosa.display.specshow(librosa.amplitude_to_db(C, ref=np.max),
@@ -30,5 +39,5 @@ def constant_q_transform(signal):
 
 
 def save_wav(signal, filename):
-    filepath = os.path.join(DATA_FOLDER, filename)
+    filepath = get_filepath(filename)
     wavfile.write(filepath, SAMPLING_FREQUENCY, signal)

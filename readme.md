@@ -42,8 +42,10 @@ pip install -r requirements.txt
 * Capture inharmonicity:
     * Railsback curve / octave stretching.
     * Harmonics are not integer multiple of fundamental.
+* For pianos, capture that there can be multiple strings to a key and they will have slightly different tunings.
 * Package up for use in other projects.
 * Link with [guitar effects project](https://github.com/MikeCullimore/guitar-effects) to add e.g. distortion.
 * FFT
 * Wavelets?
 * Linter, formatter.
+* Select samples from music on file (acoustic guitar, electric guitar, bass, piano, organ).

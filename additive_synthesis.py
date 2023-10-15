@@ -40,14 +40,13 @@ def main():
     # filename = "tone example.wav"
     
     # TODO: function to generate this for given fundamental and harmonics.
+    # TODO: function to generate list of frequencies with inharmonicity (how to quantify?).
     # TODO: function to combine those into chords.
-    parameters_list = [
-        ToneParameters(1., 440, 0, DEFAULT_LENGTH),
-        ToneParameters(1., 2*440, 0, DEFAULT_LENGTH),
-        ToneParameters(1., 3*440, 0, DEFAULT_LENGTH)
-    ]
-    signal = additive_synthesis(parameters_list, DEFAULT_LENGTH)
-    filename = "harmonics example.wav"
+    parameters_list = []
+    for i in range(1, 20):
+        parameters_list.append(ToneParameters(1/np.sqrt(i), i*440, 0, DEFAULT_LENGTH))
+    signal = additive_synthesis(parameters_list)
+    filename = "harmonics example 3.wav"
 
     waveshow(signal)
 
