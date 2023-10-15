@@ -84,13 +84,54 @@ def piano_a3_from_fft_plot():
     return additive_synthesis(parameters_list)
 
 
+class ToneParametersWithDecay(NamedTuple):
+    amplitude: float
+    frequency: float
+    decay_rate: float
+
+
+def tone_with_decay(parameters: ToneParametersWithDecay):
+    return parameters.amplitude * librosa.tone(
+        frequency=parameters.frequency,
+        sr=SAMPLING_FREQUENCY,
+        length=DEFAULT_LENGTH,
+        phi=random_phase(),
+    )
+
+
+def piano_a3_with_frequency_dependent_decay():
+    # TODO: also add some noise? Noise at the start then filter out?
+    # TODO: analyse real piano samples to infer relationship between frequency and decay rate.
+    # TODO: change units to dB/s?
+    # TODO: decouple filtering from harmonics?
+    parameters_list = [
+        ToneParametersWithDecay(1.00, 217, 0.5),
+        ToneParametersWithDecay(0.72, 441, 0.3),
+        ToneParametersWithDecay(0.38, 658, 0.2),
+        ToneParametersWithDecay(0.43, 882, 0.1),
+        ToneParametersWithDecay(0.05, 1102, 0.1),
+        ToneParametersWithDecay(0.29, 1326, 0.1),
+        ToneParametersWithDecay(0.10, 1550, 0.1),
+        ToneParametersWithDecay(0.02, 1780, 0.1)
+    ]
+    return additive_synthesis_with_decay(parameters_list)
+
+
 def additive_synthesis(parameters_list: List[ToneParameters]):
     # TODO: is this clipping? Need to normalise all signals to [-1, 1]?
     # TODO: handle inconsistent lengths (pad?).
     signal = np.zeros((DEFAULT_LENGTH,))
     for parameters in parameters_list:
         signal += tone(parameters)
-    # TODO: normalise amplitude?
+    return signal
+
+
+def additive_synthesis_with_decay(parameters_list: List[ToneParametersWithDecay]):
+    signal = np.zeros((DEFAULT_LENGTH,))
+    for parameters in parameters_list:
+        decay_parameters = ExponentialDecayParameters(parameters.decay_rate, DEFAULT_LENGTH)
+        envelope = exponential_decay(decay_parameters)
+        signal += envelope*tone_with_decay(parameters)
     return signal
 
 
@@ -104,12 +145,15 @@ def main():
     # TODO: decouple harmonics from envelope, i.e. generate all with amplitude 1 then shape in frequency domain?
     # TODO: frequency-dependent decay rates.
     # parameters_list = harmonics_array(440, 20)
-    envelope = exponential_decay(ExponentialDecayParameters(0.2, DEFAULT_LENGTH))
+    # envelope = exponential_decay(ExponentialDecayParameters(0.2, DEFAULT_LENGTH))
     # signal = envelope*additive_synthesis(parameters_list)
     # filename = "exponential decay.wav"
     # signal = envelope*piano_c4_from_fft_plot()
-    signal = envelope*piano_a3_from_fft_plot()
-    filename = "piano A3 from FFT plot (random phases).wav"
+    # signal = envelope*piano_a3_from_fft_plot()
+    # filename = "piano A3 from FFT plot (random phases).wav"
+
+    signal = piano_a3_with_frequency_dependent_decay()
+    filename = "piano A3 from FFT plot (frequency dependent decay).wav"
 
     waveshow(signal)
 

@@ -26,9 +26,12 @@ pip install -r requirements.txt
 * [librosa](https://librosa.org/doc/latest/index.html): music and audio analysis.
 * [MIT lab on time-frequency analysis](http://web.mit.edu/6.02/www/s2007/lab2.pdf) including simple parametric models of piano strings and composition script.
 * [Another implementation of Karplus-Strong](https://github.com/MikeCullimore/guitar-technique/blob/master/generate_audio.py) with more notes in my guitar-technqiue repo.
+* [Tone.js](https://tonejs.github.io/): though Javascript, includes useful principles and further links.
 
 ## TODO
 
+* Wavetable synthesis.
+* Frequency-dependent decay rates (like Karplus-Strong).
 * ADSR envelope?
 * Optimisation ideas:
     * Measure of how close tone is to target audio clip.
