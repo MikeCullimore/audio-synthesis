@@ -1,3 +1,4 @@
-matplotlib
-numpy
-scipy
+librosa==0.10.1
+matplotlib==3.4.3
+numpy==1.25.2
+scipy==1.11.3

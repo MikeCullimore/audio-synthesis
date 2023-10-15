@@ -1,7 +1,7 @@
 """
 todo:
 
-Save audio to file (see guitar-technique repo?).
+Move unrelated functions to separate file(s).
 Stretch factors from paper: 2*f/98, i.e. dependent on frequency.
 Animate wavetable modification over time.
     Plot single frame.
@@ -14,6 +14,7 @@ Write up as IPython notebook?
 
 import os.path
 
+import librosa
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import wavfile
@@ -79,14 +80,31 @@ def karplus_strong(frequency, smoothing_factor, amplitude=1.):
     return signal
 
 
-def plot_signal(signal):
+def constant_q_transform(signal):
+    return np.abs(librosa.cqt(signal, sr=SAMPLING_FREQUENCY))
+
+
+def specshow(C):
+    fig, ax = plt.subplots()
+    img = librosa.display.specshow(librosa.amplitude_to_db(C, ref=np.max),
+                                   sr=SAMPLING_FREQUENCY, x_axis='time', y_axis='cqt_note', ax=ax)
+    ax.set_title('Constant-Q power spectrum')
+    fig.colorbar(img, ax=ax, format="%+2.0f dB")
+    plt.show()
+
+
+def waveshow(y):
     # TODO: convert time to ms.
     # TODO: plot spectrogram below.
-    plt.figure()
-    plt.title("Audio waveform")
-    plt.plot(signal)
-    plt.xlabel("Time [samples]")
-    plt.ylabel("Amplitude")
+    # TODO: use librosa waveshow, specshow.
+    # plt.figure()
+    # plt.title("Audio waveform")
+    # plt.plot(signal)
+    # plt.xlabel("Time [samples]")
+    # plt.ylabel("Amplitude")
+    # plt.show()
+    fig, ax = plt.subplots()
+    librosa.display.waveshow(y, sr=SAMPLING_FREQUENCY, ax=ax)
     plt.show()
 
 
@@ -106,9 +124,13 @@ def main():
         "amplitude": 0.5
     }
     signal = karplus_strong(**kwargs)
-    # plot_signal(signal)
-    filename = "Karplus-Strong example.wav"
-    save_wav(signal, filename)
+    C = constant_q_transform(signal)
+    
+    waveshow(signal)
+    specshow(C)
+    
+    # filename = "Karplus-Strong example.wav"
+    # save_wav(signal, filename)
 
 
 if __name__ == '__main__':
