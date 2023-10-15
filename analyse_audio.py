@@ -11,6 +11,8 @@ def main():
     C = constant_q_transform(signal)
     specshow(C)
 
+    # TODO: plot frequency transform as animation over time.
+
 
 if __name__ == "__main__":
     main()

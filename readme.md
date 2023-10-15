@@ -29,8 +29,6 @@ pip install -r requirements.txt
 
 ## TODO
 
-* Additive synthesis.
-* Exponential decay envelope.
 * ADSR envelope?
 * Optimisation ideas:
     * Measure of how close tone is to target audio clip.
@@ -49,3 +47,4 @@ pip install -r requirements.txt
 * Wavelets?
 * Linter, formatter.
 * Select samples from music on file (acoustic guitar, electric guitar, bass, piano, organ).
+* Explore available VSTs e.g. this (free!) [model of a Steinway B](https://www.pianobook.co.uk/packs/the-experience-new-york-ss-model-b/).
